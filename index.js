@@ -11,7 +11,14 @@ app.listen(process.env.PORT, () => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cors());
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something went wrong!');
+});
+
 
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -20,6 +27,7 @@ app.get('/', (req, res) => {
 // app.get('/token', async (req, res) => {
 //     generateToken();
 // });
+
 
 const generateToken = async (req, res, next) => {
     const auth = new Buffer.from(`${process.env.SAFARICOM_CONSUMER_KEY}:${process.env.SAFARICOM_CONSUMER_SECRET}`).toString('base64');
@@ -67,7 +75,7 @@ app.post ("/stk", generateToken, async(req, res) => {
             PartyA: phone, // Use the tenant's phone number here
             PartyB: process.env.BUSINESS_SHORT_CODE,
             PhoneNumber: phone,
-            CallBackURL: 'https://mpesadaraja-nodejs.onrender.com/callback',
+            CallBackURL: 'https://e3a9-41-80-113-159.ngrok-free.app/callback',
             AccountReference: "Moja Nexus",
             TransactionDesc: "Paid online"
         },
@@ -83,8 +91,12 @@ app.post ("/stk", generateToken, async(req, res) => {
     })
 })
 
-app.post("/callback", (req, res) => {
+app.post('/callback', (req, res) => {
     const callbackData = req.body;
+  
+    // Log the callback data to the console
     console.log(callbackData);
-    res.status(200).send('Callback received');
-})
+  
+    // Send a response back to the M-Pesa
+    res.json({ status: 'success' });
+  });

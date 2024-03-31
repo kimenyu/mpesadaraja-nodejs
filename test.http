@@ -1,0 +1,10 @@
+POST http://localhost:3000/stk
+Content-Type: application/json
+
+{
+    "phone": "254793058968",
+    "amount": 1
+}
+
+# GET http://localhost:3000
+# Content-Type: application/json
