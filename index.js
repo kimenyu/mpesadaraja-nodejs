@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 const generateToken = async (req, res, next) => {
     const auth = new Buffer.from(`${process.env.SAFARICOM_CONSUMER_KEY}:${process.env.SAFARICOM_CONSUMER_SECRET}`).toString('base64');
 
-    await axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
+    await axios.get("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
         headers: {
             authorization: `Basic ${auth}`
         },
