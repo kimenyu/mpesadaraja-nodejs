@@ -65,7 +65,7 @@ app.post ("/stk", generateToken, async(req, res) => {
 
 
     await axios.post (
-        "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+        "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
         {
             BusinessShortCode: process.env.BUSINESS_SHORT_CODE,
             Password: password,
