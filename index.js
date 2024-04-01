@@ -75,7 +75,7 @@ app.post ("/stk", generateToken, async(req, res) => {
             PartyA: phone, // Use the tenant's phone number here
             PartyB: process.env.BUSINESS_SHORT_CODE,
             PhoneNumber: phone,
-            CallBackURL: 'https://e3a9-41-80-113-159.ngrok-free.app/callback',
+            CallBackURL: 'https://mpesadaraja-nodejs-1.onrender.com/callback',
             AccountReference: "Moja Nexus",
             TransactionDesc: "Paid online"
         },
