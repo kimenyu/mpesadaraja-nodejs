@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 const generateToken = async (req, res, next) => {
     const auth = new Buffer.from(`${process.env.SAFARICOM_CONSUMER_KEY}:${process.env.SAFARICOM_CONSUMER_SECRET}`).toString('base64');
 
-    await axios.get("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
+    await axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
         headers: {
             authorization: `Basic ${auth}`
         },
@@ -40,6 +40,7 @@ const generateToken = async (req, res, next) => {
     ).then((response) => {
         // console.log(data.data.access_token);
         token = response.data.access_token;
+        console.log(token);
         next();
     }).catch((err) => {
         console.log(err);
@@ -65,7 +66,7 @@ app.post ("/stk", generateToken, async(req, res) => {
 
 
     await axios.post (
-        "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+        "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
         {
             BusinessShortCode: process.env.BUSINESS_SHORT_CODE,
             Password: password,
@@ -75,9 +76,10 @@ app.post ("/stk", generateToken, async(req, res) => {
             PartyA: phone, // Use the tenant's phone number here
             PartyB: process.env.BUSINESS_SHORT_CODE,
             PhoneNumber: phone,
-            CallBackURL: 'https://mpesadaraja-nodejs-1.onrender.com/callback',
+            CallBackURL: ' /callback',
             AccountReference: "Moja Nexus",
-            TransactionDesc: "Paid online"
+            TransactionDesc: "Paid online",
+
         },
         {
             headers: {
