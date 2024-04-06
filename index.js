@@ -1,13 +1,23 @@
 const express = require('express');
 const axios = require('axios');
+const mongoose = require('mongoose');
+const Payment = require('./models/paymentModel');
 
 const app = express();
 require("dotenv").config();
 const cors = require('cors');
+const port = process.env.PORT;
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
-});
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log("Connected to MongoDB");
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    })
+    .catch((err) => {
+        console.error("Error connecting to MongoDB:", err);
+    });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -93,12 +103,48 @@ app.post ("/stk", generateToken, async(req, res) => {
     })
 })
 
-app.post('/callback', (req, res) => {
-    const callbackData = req.body;
-  
-    // Log the callback data to the console
-    console.log(callbackData);
-  
-    // Send a response back to the M-Pesa
-    res.json({ status: 'success' });
-  });
+
+app.post('/callback', async (req, res) => {
+    try{
+
+       
+            //callback details
+    
+            const {
+                MerchantRequestID,
+                CheckoutRequestID,
+                ResultCode,
+                ResultDesc,
+                CallbackMetadata
+                     }   = req.body.Body.stkCallback
+    
+        //     get the meta data from the meta
+            const meta = Object.values(await CallbackMetadata.Item)
+            const PhoneNumber = meta.find(o => o.Name === 'PhoneNumber').Value.toString()
+            const Amount = meta.find(o => o.Name === 'Amount').Value.toString()
+            const MpesaReceiptNumber = meta.find(o => o.Name === 'MpesaReceiptNumber').Value.toString()
+            const TransactionDate = meta.find(o => o.Name === 'TransactionDate').Value.toString()
+    
+            // do something with the data
+            console.log("-".repeat(20)," OUTPUT IN THE CALLBACK ", "-".repeat(20))
+            console.log(`
+                MerchantRequestID : ${MerchantRequestID},
+                CheckoutRequestID: ${CheckoutRequestID},
+                ResultCode: ${ResultCode},
+                ResultDesc: ${ResultDesc},
+                PhoneNumber : ${PhoneNumber},
+                Amount: ${Amount}, 
+                MpesaReceiptNumber: ${MpesaReceiptNumber},
+                TransactionDate : ${TransactionDate}
+            `)
+    
+            res.json(true)
+    
+        }catch (e) {
+            console.error("Error while trying to update LipaNaMpesa details from the callback",e)
+            res.status(503).send({
+                message:"Something went wrong with the callback",
+                error : e.message
+            })
+        }    
+});
