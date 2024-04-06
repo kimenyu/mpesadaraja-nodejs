@@ -1,25 +1,20 @@
+// Import Mongoose
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
 
-const paymentSchema = new Schema({
-    number: {
-        type: String,
-        required: true
-    },
-    amount: {
-        type: Number,
-        required: true
-    },
-    trnx_id: {
-        type: String,
-        required: true
-    },
-    timestamps: {
-        type: Date,
-        default: Date.now
-    }
+// Define the Payment schema
+const paymentSchema = new mongoose.Schema({
+  MerchantRequestID: String,
+  CheckoutRequestID: String,
+  ResultCode: String,
+  ResultDesc: String,
+  Amount: String,
+  MpesaReceiptNumber: String,
+  TransactionDate: Date,
+  PhoneNumber: String,
 });
 
+// Create the Payment model
 const Payment = mongoose.model('Payment', paymentSchema);
 
+// Export the Payment model
 module.exports = Payment;

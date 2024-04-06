@@ -103,7 +103,7 @@ app.post ("/stk", generateToken, async(req, res) => {
     })
 })
 
-app.post('/callback', (req, res) => {
+app.post('/callback', async(req, res) => {
     const callbackData = req.body;
   
     // Log the callback data to the console
@@ -115,4 +115,21 @@ app.post('/callback', (req, res) => {
     }
 
     console.log(callbackData.Body.stkCallback.CallbackMetadata);
+
+    const newpayment = new Payment({
+        MerchantRequestID: callbackData.Body.stkCallback.MerchantRequestID,
+        CheckoutRequestID: callbackData.Body.stkCallback.CheckoutRequestID,
+        ResultCode: callbackData.Body.stkCallback.ResultCode,
+        ResultDesc: callbackData.Body.stkCallback.ResultDesc,
+        Amount: callbackData.Body.stkCallback.CallbackMetadata.Item[0].Value,
+        MpesaReceiptNumber: callbackData.Body.stkCallback.CallbackMetadata.Item[1].Value,
+        TransactionDate: callbackData.Body.stkCallback.CallbackMetadata.Item[3].Value,
+        PhoneNumber: callbackData.Body.stkCallback.CallbackMetadata.Item[4].Value,
+    });
+
+    await newpayment.save().then(() => {
+        console.log("Payment saved to the database");
+    }).catch((err) => {
+        console.error("Error saving payment to the database:", err);
+    });
   });
